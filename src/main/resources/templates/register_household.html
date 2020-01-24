@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang = "ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<form th:action="@{/registerHouseholds/registerNewHousehold}" method="POST">
+家計簿名 : <input type="text" name="householdName"><br>
+
+<button>作成する</button>
+
+</form>
+
+</body>
+</html>

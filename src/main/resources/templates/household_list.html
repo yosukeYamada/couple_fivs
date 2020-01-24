@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang = "ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<a>家計簿リスト～～～</a>
+<div th:each="household:${householdList}">
+	<div><a th:text="${household.householdName}" th:href="@{'/registerHouseholds/showHouseholdMenu?householdId='+${household.id}}"></a></div>
+
+</div>
+<a th:href="@{/registerHouseholds}">戻る</a>
+
+</body>
+</html>

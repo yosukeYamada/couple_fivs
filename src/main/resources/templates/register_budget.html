@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang = "ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>予算を登録する</title>
+</head>
+<body>
+<form th:action="@{/registerHouseholds/registerBudget}" method="POST">
+<p>日付</p><br>
+<input type="month" name="date">
+<input type="hidden" name="householdId" th:value="${session.householdId}"><br>
+収入<br>
+項目名 : <input type="text" name="eachIncomeCategoryNameList"> 金額 : <input type="text" name="eachIncomeAmountList"><br>
+項目名 : <input type="text" name="eachIncomeCategoryNameList"> 金額 : <input type="text" name="eachIncomeAmountList"><br>
+項目名 : <input type="text" name="eachIncomeCategoryNameList"> 金額 : <input type="text" name="eachIncomeAmountList"><br>
+項目名 : <input type="text" name="eachIncomeCategoryNameList"> 金額 : <input type="text" name="eachIncomeAmountList"><br>
+項目名 : <input type="text" name="eachIncomeCategoryNameList"> 金額 : <input type="text" name="eachIncomeAmountList"><br>
+
+
+支出<br>
+項目名 : <input type="text" name="eachPaymentCategoryNameList"> 金額 : <input type="text" name="eachPaymentAmountList"><br>
+項目名 : <input type="text" name="eachPaymentCategoryNameList"> 金額 : <input type="text" name="eachPaymentAmountList"><br>
+項目名 : <input type="text" name="eachPaymentCategoryNameList"> 金額 : <input type="text" name="eachPaymentAmountList"><br>
+項目名 : <input type="text" name="eachPaymentCategoryNameList"> 金額 : <input type="text" name="eachPaymentAmountList"><br>
+項目名 : <input type="text" name="eachPaymentCategoryNameList"> 金額 : <input type="text" name="eachPaymentAmountList"><br>
+
+<button>登録</button>
+</form>
+<a th:href="@{/registerHouseholds/showHouseholdMenu}">戻る</a>
+</body>
+</html>

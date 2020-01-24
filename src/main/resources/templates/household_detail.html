@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang = "ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<a th:href="@{'/registerHouseholds/showRegisterBudgetForm?householdId='+${session.householdId}}">予算を登録する</a><br>
+<a th:href="@{/registerHouseholds/showRegisterSettlementForm}">決算を登録する</a><br>
+<a th:href="@{'/registerHouseholds/showHousehold?householdId='+${session.householdId}}">履歴を表示する</a><br>
+<a th:href="@{/registerHouseholds/showHouseholdList}">戻る</a>
+</body>
+</html>
