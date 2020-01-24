@@ -15,10 +15,10 @@
 	<div th:each="incomeBudget:${budget.incomeBudgetList}">
 		<div th:text="'項目 : '+${incomeBudget.categoryName}+'   金額'+${incomeBudget.amount}"></div><br>
 	</div>
-<!-- 	<div>支出</div> -->
-<!-- 	<div th:each="paymentBudget:${budget.paymentBudgetList}"> -->
-<!-- 		<div th:text="'項目 : '+${paymentBudget.categoryName}+'   金額'+${paymentBudget.amount}"></div><br> -->
-<!-- 	</div> -->
+	<div>支出</div>
+	<div th:each="paymentBudget:${budget.paymentBudgetList}">
+		<div th:text="'項目 : '+${paymentBudget.categoryName}+'   金額'+${paymentBudget.amount}"></div><br>
+	</div>
 	<div th:text="'収入 : '+${totalAmountAboutBudget.totalIncomeAmountAboutBudget}"></div>
 	<div th:text="'支出 : '+${totalAmountAboutBudget.totalPaymentAmountAboutBudget}"></div>
 	<div th:text=${totalAmountAboutBudget}></div>

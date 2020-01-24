@@ -41,6 +41,12 @@ public class HouseholdRepository {
 		List<IncomeSettlement> incomeSettlementList = null;
 		List<PaymentSettlement> paymentSettlementList = null;
 		int checkId = 0;
+		int lastPsId = 0;
+		int lastIbId = 0;
+		int lastPbId = 0;
+		int lastSID = 0;
+		int lastIsId = 0;
+		int lastBId = 0;
 		while (rs.next()) {
 			int nowId = rs.getInt("h_id");
 			if (nowId != checkId) {
@@ -55,8 +61,10 @@ public class HouseholdRepository {
 				household.setSettlementList(settlementList);
 				householdList.add(household);
 			}
-			System.out.println("60行目"+rs.getInt("b_id"));
-			if (rs.getInt("b_id") != 0) {
+			int nowBId = rs.getInt("b_id");
+//			lastBId
+			System.out.println("60行目" + rs.getInt("b_id"));
+			if (nowBId != 0 && nowBId != lastBId) {
 				Budget budget = new Budget();
 				budget.setId(rs.getInt("b_id"));
 				budget.setHouseholdId(rs.getInt("b_households_id"));
@@ -67,7 +75,9 @@ public class HouseholdRepository {
 				budget.setPaymentBudgetList(paymentBudgetList);
 				budgetList.add(budget);
 			}
-			if(rs.getInt("ib_id") !=0) {
+			lastBId = nowBId;
+			int nowIbId = rs.getInt("ib_id");
+			if (nowIbId != 0 && nowIbId != lastIbId) {
 				IncomeBudget incomeBudget = new IncomeBudget();
 				incomeBudget.setId(rs.getInt("ib_id"));
 				incomeBudget.setBudgetId(rs.getInt("b_id"));
@@ -77,7 +87,9 @@ public class HouseholdRepository {
 				incomeBudget.setDate(rs.getTimestamp("ib_date"));
 				incomeBudgetList.add(incomeBudget);
 			}
-			if(rs.getInt("pb_id") != 0) {
+			lastIbId = nowIbId;
+			int nowPbId = rs.getInt("pb_id");
+			if (nowPbId != 0 && nowPbId > lastPbId) {
 				PaymentBudget paymentBudget = new PaymentBudget();
 				paymentBudget.setId(rs.getInt("pb_id"));
 				paymentBudget.setBudgetId(rs.getInt("b_id"));
@@ -87,7 +99,12 @@ public class HouseholdRepository {
 				paymentBudget.setDate(rs.getTimestamp("pb_date"));
 				paymentBudgetList.add(paymentBudget);
 			}
-			if (rs.getInt("s_id") != 0) {
+			if(lastPbId < nowPbId) {
+				lastPbId = nowPbId;
+			};
+			int nowSID = rs.getInt("s_id");
+			
+			if (nowSID != 0 && nowSID != lastSID) {
 				Settlement settlement = new Settlement();
 				settlement.setId(rs.getInt("s_id"));
 				settlement.setHouseholdId(rs.getInt("s_households_id"));
@@ -97,7 +114,10 @@ public class HouseholdRepository {
 				settlement.setIncomeSettlementList(incomeSettlementList);
 				settlementList.add(settlement);
 			}
-			if(rs.getInt("is_id") != 0) {
+			lastSID = nowSID;
+			int nowIsId = rs.getInt("is_id");
+			
+			if (nowIsId != 0 && nowIsId != lastIsId) {
 				IncomeSettlement incomeSettlement = new IncomeSettlement();
 				incomeSettlement.setId(rs.getInt("is_id"));
 				incomeSettlement.setCategoryName(rs.getString("i_s_category_name"));
@@ -107,7 +127,9 @@ public class HouseholdRepository {
 				incomeSettlement.setSettlementId(rs.getInt("s_id"));
 				incomeSettlementList.add(incomeSettlement);
 			}
-			if(rs.getInt("ps_id") !=0) {
+			lastIsId = nowIsId;
+			int nowPsId = rs.getInt("ps_id");
+			if (nowPsId != 0 && nowPsId > lastPsId) {
 				PaymentSettlement paymentSettlement = new PaymentSettlement();
 				paymentSettlement.setId(rs.getInt("ps_id"));
 				paymentSettlement.setCategoryName(rs.getString("ps_category_name"));
@@ -116,6 +138,10 @@ public class HouseholdRepository {
 				paymentSettlement.setDate(rs.getTimestamp("ps_date"));
 				paymentSettlement.setSettlementId(rs.getInt("s_id"));
 				paymentSettlementList.add(paymentSettlement);
+			}
+			if(lastPsId < nowPsId) {
+				lastPsId = nowPsId;
+				
 			}
 			checkId = nowId;
 		}
@@ -141,22 +167,20 @@ public class HouseholdRepository {
 		List<Household> householdList = template.query(sql, param, HOUSEHOLD_ROW_MAPPER);
 		return householdList;
 	}
-	
+
 	public Household load(Integer householdId) {
-		String sql="SELECT id,date,users_id,household_name FROM households WHERE id = :householdId";
+		String sql = "SELECT id,date,users_id,household_name FROM households WHERE id = :householdId";
 		SqlParameterSource param = new MapSqlParameterSource().addValue("householdId", householdId);
-		List<Household> householdList = template.query(sql, param,HOUSEHOLD_ROW_MAPPER);
-		if(householdList.size() != 0) {
+		List<Household> householdList = template.query(sql, param, HOUSEHOLD_ROW_MAPPER);
+		if (householdList.size() != 0) {
 			return householdList.get(0);
-		}else {
+		} else {
 			return null;
 		}
 	}
-	
-	
 
 	public Household findByHouseholdId(Integer householdId) {
-		System.out.println(householdId+"srtyhtmrynet");
+		System.out.println(householdId + "srtyhtmrynet");
 //		String sql = "SELECT id,date,users_id,household_name FROM households WHERE id = :householdId";
 //		String sql = "SELECT h.id AS households_id," + " h.date AS households_date,"
 //				+ "h.users_id AS households_users_id," + "h.household_name AS households_name," + "b.id AS budgets_id,"
@@ -168,7 +192,57 @@ public class HouseholdRepository {
 //				+ "s.status AS settlements_status," + "s.date AS settlements_date "
 //				+ "FROM households AS h LEFT OUTER JOIN budgets AS b " + "ON h.id = b.households_id "
 //				+ "LEFT OUTER JOIN settlements AS s " + "ON h.id = s.households_id " + "WHERE h.id = :householdId";
-		String sql = "SELECT h.id AS h_id,h.date AS h_date,h.users_id AS h_users_id,h.household_name AS h_household_name,b.id AS b_id,b.households_id AS b_households_id,b.date AS b_date,ib.id AS ib_id,ib.budgets_id AS ib_budgets_id,ib.category_name AS ib_category_name,ib.amount AS ib_amount,ib.participants_id AS ib_participants_id,ib.date AS ib_date,pb.id AS pb_id,pb.budgets_id AS pb_budgets_id,pb.category_name AS pb_category_name,pb.amount AS pb_amount,pb.participants_id AS pb_participants_id,pb.date AS pb_date,s.id AS s_id,s.households_id AS s_households_id,s.date AS s_date,i_s.id AS is_id,i_s.settlements_id AS is_budgets_id,i_s.category_name AS is_category_name,i_s.amount AS is_amount,i_s.participants_id AS is_participants_id,i_s.date AS is_date, ps.id AS ps_id,ps.settlements_id AS ps_settlements_id, ps.category_name AS ps_category_name,ps.amount AS ps_amount,ps.participants_id AS ps_participants_id,ps.date AS ps_date FROM households AS h LEFT OUTER JOIN budgets AS b ON h.id = b.households_id LEFT OUTER JOIN income_budgets AS ib ON b.id = ib.budgets_id LEFT OUTER JOIN payment_budgets AS pb ON b.id = pb.budgets_id LEFT OUTER JOIN settlements AS s ON h.id = s.households_id LEFT OUTER JOIN income_settlements AS i_s ON s.id = i_s.settlements_id LEFT OUTER JOIN payment_settlements AS ps ON s.id = ps.settlements_id WHERE h.id = :householdId";
+		String sql = "SELECT h.id AS h_id,h.date AS h_date,h.users_id AS h_users_id,h.household_name AS h_household_name,b.id AS b_id,b.households_id AS b_households_id,b.date AS b_date,ib.id AS ib_id,ib.budgets_id AS ib_budgets_id,ib.category_name AS ib_category_name,ib.amount AS ib_amount,ib.participants_id AS ib_participants_id,ib.date AS ib_date,pb.id AS pb_id,pb.budgets_id AS pb_budgets_id,pb.category_name AS pb_category_name,pb.amount AS pb_amount,pb.participants_id AS pb_participants_id,pb.date AS pb_date,s.id AS s_id,s.households_id AS s_households_id,s.date AS s_date,i_s.id AS is_id,i_s.settlements_id AS is_budgets_id,i_s.category_name AS is_category_name,i_s.amount AS is_amount,i_s.participants_id AS is_participants_id,i_s.date AS is_date,ps.id AS ps_id,ps.settlements_id AS ps_settlements_id,ps.category_name AS ps_category_name,ps.amount AS ps_amount,ps.participants_id AS ps_participants_id,ps.date AS ps_date FROM households AS h LEFT OUTER JOIN budgets AS b ON h.id = b.households_id LEFT OUTER JOIN income_budgets AS ib ON b.id = ib.budgets_id LEFT OUTER JOIN payment_budgets AS pb ON b.id = pb.budgets_id LEFT OUTER JOIN settlements AS s ON h.id = s.households_id LEFT OUTER JOIN income_settlements AS i_s ON s.id = i_s.settlements_id LEFT OUTER JOIN payment_settlements AS ps ON s.id = ps.settlements_id WHERE h.id = 1 ORDER BY b.id,ib.id,pb.id,i_s.id,ps.id ASC";
+//		SELECT h.id AS h_id,h.date AS h_date,h.users_id AS h_users_id,h.household_name AS h_household_name,b.id AS b_id,b.households_id AS b_households_id,b.date AS b_date,ib.id AS ib_id,ib.budgets_id AS ib_budgets_id,ib.category_name AS ib_category_name,ib.amount AS ib_amount,ib.participants_id AS ib_participants_id,ib.date AS ib_date,pb.id AS pb_id,pb.budgets_id AS pb_budgets_id,pb.category_name AS pb_category_name,pb.amount AS pb_amount,pb.participants_id AS pb_participants_id,pb.date AS pb_date,s.id AS s_id,s.households_id AS s_households_id,s.date AS s_date,i_s.id AS is_id,i_s.settlements_id AS is_budgets_id,i_s.category_name AS is_category_name,i_s.amount AS is_amount,i_s.participants_id AS is_participants_id,i_s.date AS is_date,ps.id AS ps_id,ps.settlements_id AS ps_settlements_id,ps.category_name AS ps_category_name,ps.amount AS ps_amount,ps.participants_id AS ps_participants_id,ps.date AS ps_date FROM households AS h LEFT OUTER JOIN budgets AS b ON h.id = b.households_id LEFT OUTER JOIN income_budgets AS ib ON b.id = ib.budgets_id LEFT OUTER JOIN payment_budgets AS pb ON b.id = pb.budgets_id LEFT OUTER JOIN settlements AS s ON h.id = s.households_id LEFT OUTER JOIN income_settlements AS i_s ON s.id = i_s.settlements_id LEFT OUTER JOIN payment_settlements AS ps ON s.id = ps.settlements_id WHERE h.id = :householdId
+//		String sql = "SELECT h.id AS h_id,"
+//				+ "h.date AS h_date,"
+//				+ "h.users_id AS h_users_id,"
+//				+ "h.household_name AS h_household_name,"
+//				+ "b.id AS b_id,"
+//				+ "b.households_id AS b_households_id,"
+//				+ "b.date AS b_date,"
+//				+ "ib.id AS ib_id,"
+//				+ "ib.budgets_id AS ib_budgets_id,"
+//				+ "ib.category_name AS ib_category_name,"
+//				+ "ib.amount AS ib_amount,"
+//				+ "ib.participants_id AS ib_participants_id,"
+//				+ "ib.date AS ib_date,"
+//				+ "pb.id AS pb_id,"
+//				+ "pb.budgets_id AS pb_budgets_id,"
+//				+ "pb.category_name AS pb_category_name,"
+//				+ "pb.amount AS pb_amount,"
+//				+ "pb.participants_id AS pb_participants_id,"
+//				+ "pb.date AS pb_date,"
+//				+ "s.id AS s_id,"
+//				+ "s.households_id AS s_households_id,"
+//				+ "s.date AS s_date,"
+//				+ "i_s.id AS is_id,"
+//				+ "i_s.settlements_id AS is_budgets_id,"
+//				+ "i_s.category_name AS is_category_name,"
+//				+ "i_s.amount AS is_amount,"
+//				+ "i_s.participants_id AS is_participants_id,"
+//				+ "i_s.date AS is_date,"
+//				+ "ps.id AS ps_id,"
+//				+ "ps.settlements_id AS ps_settlements_id,"
+//				+ "ps.category_name AS ps_category_name,"
+//				+ "ps.amount AS ps_amount,"
+//				+ "ps.participants_id AS ps_participants_id,"
+//				+ "ps.date AS ps_date "
+//				+ "FROM households AS h "
+//				+ "LEFT OUTER JOIN budgets AS b "
+//				+ "ON h.id = b.households_id "
+//				+ "LEFT OUTER JOIN income_budgets AS ib "
+//				+ "ON b.id = ib.budgets_id "
+//				+ "LEFT OUTER JOIN payment_budgets AS pb "
+//				+ "ON b.id = pb.budgets_id "
+//				+ "LEFT OUTER JOIN settlements AS s "
+//				+ "ON h.id = s.households_id "
+//				+ "LEFT OUTER JOIN income_settlements AS i_s "
+//				+ "ON s.id = i_s.settlements_id "
+//				+ "LEFT OUTER JOIN payment_settlements AS ps "
+//				+ "ON s.id = ps.settlements_id "
+//				+ "WHERE h.id = :householdId";
+//		String sql = "SELECT h.id AS h_id,h.date AS h_date,h.users_id AS h_users_id,h.household_name AS h_household_name,b.id AS b_id,b.households_id AS b_households_id,b.date AS b_date,ib.id AS ib_id,ib.budgets_id AS ib_budgets_id,ib.category_name AS ib_category_name,ib.amount AS ib_amount,ib.participants_id AS ib_participants_id,ib.date AS ib_date,pb.id AS pb_id,pb.budgets_id AS pb_budgets_id,pb.category_name AS pb_category_name,pb.amount AS pb_amount,pb.participants_id AS pb_participants_id,pb.date AS pb_date,s.id AS s_id,s.households_id AS s_households_id,s.date AS s_date,i_s.id AS is_id,i_s.settlements_id AS is_budgets_id,i_s.category_name AS is_category_name,i_s.amount AS is_amount,i_s.participants_id AS is_participants_id,i_s.date AS is_date, ps.id AS ps_id,ps.settlements_id AS ps_settlements_id, ps.category_name AS ps_category_name,ps.amount AS ps_amount,ps.participants_id AS ps_participants_id,ps.date AS ps_date  FROM budgets AS b JOIN income_budgets AS ib ON b.id = ib.budgets_id UNION ALL SELECT h.id AS h_id,h.date AS h_date,h.users_id AS h_users_id,h.household_name AS h_household_name,b.id AS b_id,b.households_id AS b_households_id,b.date AS b_date,ib.id AS ib_id,ib.budgets_id AS ib_budgets_id,ib.category_name AS ib_category_name,ib.amount AS ib_amount,ib.participants_id AS ib_participants_id,ib.date AS ib_date,pb.id AS pb_id,pb.budgets_id AS pb_budgets_id,pb.category_name AS pb_category_name,pb.amount AS pb_amount,pb.participants_id AS pb_participants_id,pb.date AS pb_date,s.id AS s_id,s.households_id AS s_households_id,s.date AS s_date,i_s.id AS is_id,i_s.settlements_id AS is_budgets_id,i_s.category_name AS is_category_name,i_s.amount AS is_amount,i_s.participants_id AS is_participants_id,i_s.date AS is_date, ps.id AS ps_id,ps.settlements_id AS ps_settlements_id, ps.category_name AS ps_category_name,ps.amount AS ps_amount,ps.participants_id AS ps_participants_id,ps.date AS ps_date  FROM budgets AS b JOIN payment_budgets AS pb ON b.id = pb.budgets_id";
 		SqlParameterSource param = new MapSqlParameterSource().addValue("householdId", householdId);
 		List<Household> householdList = template.query(sql, param, HOUSEHOLD_RESULTSETEXTRACTER);
 		Household household = householdList.get(0);
